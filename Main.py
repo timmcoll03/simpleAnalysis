@@ -89,12 +89,9 @@ def nltk():#nltk Tokenization and Freq. Analysis
 
 
 
-analysisType = input("Would you like to do nltk[0], keras[1], or both[2] ")#User Chooses Analysis Type
+analysisType = input("Would you like to do nltk[0] or keras[1] ")#User Chooses Analysis Type
 
 if(analysisType==str(0)):
     nltk()
 if(analysisType==str(1)):
-    keras()
-if(analysisType==str(2)):
-    nltk()
     keras()
