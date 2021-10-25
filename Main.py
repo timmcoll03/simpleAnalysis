@@ -45,7 +45,7 @@ def keras():#Keras Tokenization and Freq. Analysis
     print(data.reviewText[:10])
     print(f'ListOfWords: {list(tokenizer.word_index.keys())}')
     print(tokenizer.word_index)
-    plt.plot(display[0])
+    plt.plot(display)
     plt.show()
 
     kmeans(display)
