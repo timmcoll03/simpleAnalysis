@@ -5,44 +5,78 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.text import Tokenizer
 from sklearn.cluster import KMeans
 import nltk 
-
-data = pd.read_csv("/Users/timothycolledge/Desktop/Compsci/Project 3/simpleAnalysis/Musical_instruments_reviews.csv", index_col=False)
-#print(data.head(10))
-
-tokenizer= Tokenizer()
-
-#print(data.reviewText[:10])
-
-tokenizer.fit_on_texts(data.reviewText[:10])
-
-#print(f'ListOfWords: {list(tokenizer.word_index.keys())}')
-
-#print(tokenizer.word_index)
-
-display = tokenizer.texts_to_matrix(data.reviewText[:10], mode='freq')
+import csv
 
 
-print(display)
+def kmeans(dataSet):
+    countData = pd.DataFrame(dataSet)
+    clusters = KMeans(n_clusters=5)
+    clusters.fit(countData)
+    clusteredData = pd.DataFrame(clusters.cluster_centers_)
+    cluster_map = pd.DataFrame()
+    cluster_map['data_index'] = countData.index.values
+    cluster_map['cluster'] = clusters.labels_
 
-plt.plot()
-
-countData = pd.DataFrame(display)
-
-#print(countData.head(10))
-
-clusters = KMeans(n_clusters=5)
-clusters.fit(countData)
-#print(clusters.inertia_)
-
-clusteredData = pd.DataFrame(clusters.cluster_centers_)
-#print(clusteredData.head())
-
-
-cluster_map = pd.DataFrame()
-cluster_map['data_index'] = countData.index.values
-cluster_map['cluster'] = clusters.labels_
-#print(cluster_map.head(10))
+    print(clusters.inertia_)
+    print(cluster_map.head())
+    plt.plot(cluster_map.data_index,cluster_map.cluster)
+    plt.show()
 
 
-plt.plot(display)
-plt.show()
+def keras():
+    data = pd.read_csv("/Users/timothycolledge/Desktop/Compsci/Project 3/simpleAnalysis/Musical_instruments_reviews.csv", index_col=False)
+    tokenizer= Tokenizer()
+    tokenizer.fit_on_texts(data.reviewText[:300])
+    display = tokenizer.texts_to_matrix(data.reviewText[:300], mode='freq')
+    print(data.head(10))
+    print(data.reviewText[:10])
+    print(f'ListOfWords: {list(tokenizer.word_index.keys())}')
+    print(tokenizer.word_index)
+    plt.plot(display[0])
+    plt.show()
+    kmeans(display)
+
+def nltk():
+    nldata= []
+    with open("/Users/timothycolledge/Desktop/Compsci/Project 3/simpleAnalysis/Musical_instruments_reviews.csv", mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            nldata.append(nltk.word_tokenize(row["reviewText"]))
+
+
+    nlCountData = []
+    nlKmeansData = {}
+    for x in range (len(nldata)):  
+        nlcountData = {}
+        for nam in nldata[x]:  
+            if nam not in nlcountData:
+                nlcountData.update({nam: 0})
+                nlKmeansData.update({x: 0})
+        nlCountData.append(nlcountData)
+
+    for x in range (len(nldata)):  
+        for nam in nldata[x]: 
+            nlCountData[x][nam] += 1
+
+    for x in range (len(nldata)):  
+        for nam in nldata[x]: 
+            nlKmeansData[x] = nlCountData[x][nam]
+
+    nlfinalData = sorted(nlKmeansData.items())
+    x,y = zip(*nlfinalData)
+    plt.plot(x,y)
+    plt.show()
+    
+    kmeans(nlfinalData)
+
+
+
+analysisType = input("Would you like to do nltk[0], keras[1], or both[2] ")
+
+if(analysisType==str(0)):
+    nltk()
+if(analysisType==str(1)):
+    keras()
+if(analysisType==str(2)):
+    nltk()
+    keras()
